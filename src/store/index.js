@@ -30,6 +30,7 @@ const INITIAL_STATE = {
         nursery: false
     },
     filterTabActive: false,
+    editProfileActive: false,
 };
 
 function reducer(state = INITIAL_STATE, action) {
