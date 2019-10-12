@@ -19,7 +19,7 @@ const INITIAL_STATE = {
     },
     markers: [],
     filterActive: {
-        food: true,
+        food: false,
         documentation: false,
         education: false,
         shelter: false,
@@ -30,6 +30,7 @@ const INITIAL_STATE = {
         nursery: false
     },
     filterTabActive: false,
+    filterTabLoading: false,
     editProfileActive: false,
 };
 
@@ -60,7 +61,9 @@ function reducer(state = INITIAL_STATE, action) {
             newState.filterActive[filterA] = !state.filterActive[filterA];
             return newState 
         case 'FILTERTAB_ACTIVE':
-                return { ...state, filterTabActive: !state.filterTabActive}
+            return { ...state, filterTabActive: !state.filterTabActive}
+        case 'FILTER_LOADING':
+            return { ...state, filterTabLoading: !state.filterTabLoading}
         default:
             return state;
     }

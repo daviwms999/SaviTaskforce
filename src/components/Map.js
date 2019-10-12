@@ -6,6 +6,8 @@ import MapView, { Marker } from 'react-native-maps';
 import { useSelector, useDispatch } from 'react-redux';
 import axios from 'axios';
 import MapStyle from '../components/MapStyle';
+import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
+
 
 export default function components() {
     const url = 'https://parseapi.back4app.com/functions/get_offer_points';
@@ -49,7 +51,7 @@ export default function components() {
             }
         );
         read_offers({position: {latitude: latitude, longitude: longitude}, filter: filters});
-    }, [filterTabActive==false]);
+    }, []);
     
     function changeActive(latitude, longitude) {
         dispatch({ type: 'UPDATE_LOCATION', latitude: latitude, longitude: longitude })
@@ -66,7 +68,7 @@ export default function components() {
     return (
         <MapView 
                     style={{ flex: 1 }} 
-                    region={region} 
+                    initialRegion={region} 
                     showsUserLocation
                     loadingEnabled
                     customMapStyle={MapStyle}
@@ -79,7 +81,7 @@ export default function components() {
                         longitude: marker.longitude
                     }}
                     title={marker.name}
-                    description={marker.description}
+                    //description={marker.description.portuguese}
                 />
                 ))}
         </MapView>

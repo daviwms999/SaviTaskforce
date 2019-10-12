@@ -1,9 +1,10 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, Fragment } from 'react';
 import Map from '../../components/Map';
-import { View, SafeAreaView, Image, TouchableOpacity, StyleSheet, Text, ScrollView } from 'react-native';
-import { Appbar, Surface, Button, FAB } from 'react-native-paper';
+import { View, Image, TouchableOpacity, StyleSheet, Text, ScrollView } from 'react-native';
+import { Appbar, Surface, Button, FAB, ActivityIndicator } from 'react-native-paper';
 import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import { useSelector, useDispatch } from 'react-redux';
+import axios from 'axios';
 
 //import { } from 'react-navigation';
 
@@ -21,6 +22,50 @@ export default function MapScreen({ navigation }) {
     const nursery = useSelector(state => state.filterActive.nursery);
     const dispatch =  useDispatch();
     const filterTabActive = useSelector(state => state.filterTabActive);
+    const filterTabLoading = useSelector(state => state.filterTabLoading);
+
+    const latitude = useSelector(state => state.user.location.latitude);
+    const longitude = useSelector(state => state.user.location.longitude);
+    const filters = useSelector(state => state.filterActive);
+
+    const url = 'https://parseapi.back4app.com/functions/get_offer_points';
+    const config = {
+        headers: {
+            'X-Parse-Application-Id': '47RAnYvxm7rWLUTUZYHt9SItJjd9FnmWj5ZK5g92',
+            'X-Parse-REST-API-Key': 'ZMbHFNcQ1Rvh7bIpoctydiF9yRtZDrnJ81pzhtdF'
+        }
+    };
+
+    function addMarkers(markers) {
+        dispatch({ type: 'ADD_MARKERS', markers: markers })
+    }
+
+    function sleep(milliseconds) {
+        var start = new Date().getTime();
+        for (var i = 0; i < 1e7; i++) {
+          if ((new Date().getTime() - start) > milliseconds){
+            break;
+          }
+        }
+    }
+
+    async function read_offers(data) {
+        if (data === 0) {
+            toggleLoading();
+            return await axios.post(url, {}, config).then((res) => {
+                console.log(res.data.result);
+                return (addMarkers(res.data.result), changeTabActive(), toggleLoading());
+            });
+        } else {
+            toggleLoading();
+            return await axios.post(url, data, config).then((res) => {
+                console.log(res.data.result);
+                sleep(2000);
+                return (addMarkers(res.data.result), changeTabActive(), toggleLoading());
+            });
+        }
+    }
+    
 
     function changeActive(filter) {
         dispatch({ type: 'FILTER_ACTIVE', filter: filter })
@@ -30,36 +75,70 @@ export default function MapScreen({ navigation }) {
         dispatch({ type: 'FILTERTAB_ACTIVE' })
     }
 
-    //useEffect(() => {}, [filterActive]);
-    
+    function toggleLoading() {
+        dispatch({ type: 'FILTER_LOADING' })
+    }
+
     return (
-        <View style={{flex: 1}}>
-            <Appbar style={{ height: hp("8%"), justifyContent:'space-between'}}>
-                <TouchableOpacity onPress={() => navigation.openDrawer()}>
-                     <Image
+        <View style={{flex: 1, backgroundColor: '#000'}}>   
+            <View style={{ backgroundColor:"#ff7043" ,height: hp("8%"), justifyContent:'center', width: wp("100%"), flexDirection: 'row', alignItems: 'center'}}>
+                <View style={{ width: wp("20%"), alignItems: 'flex-start'}}>
+                    <Appbar.Action style={{ marginLeft: wp("4%")}} icon="menu" onPress={()=>navigation.openDrawer()} color='#fff' />
+                </View>
+                <View style={{ width: wp("60%"), alignItems: 'center'}}>
+                    <Image
+                        source={require("../../assets/images/savibrancotitle.png")}
+                        resizeMode="contain"
+                        resizeMethod="auto"
+                        style={{ height: hp("5%"), width: hp("10%")}}
+                    />
+                </View>
+                <View style={{ width: wp("20%"), alignItems: 'flex-end'}}>
+                    <Image
                         source={require("../../assets/images/savibrancoicone.png")}
                         resizeMode="contain"
                         resizeMethod="auto"
-                        style={{ height: hp("4%"), alignSelf: "flex-end", width: hp("4%"), alignSelf: 'center', marginLeft: wp("3%")}}
+                        style={{ height: hp("4%"), width: hp("4%"), marginRight: wp("4%")}}
+                    />
+                </View>
+            </View>
+            {/* 
+                <TouchableOpacity onPress={() => navigation.openDrawer()}>
+                    <Image
+                        source={require("../../assets/images/savibrancoicone.png")}
+                        resizeMode="contain"
+                        resizeMethod="auto"
+                        style={{ height: hp("6%"), width: hp("5%"), position: 'absolute', top: hp("2%"), left: hp("2%"), zIndex: 10}}
                     />
                 </TouchableOpacity>
-                <Image
-                    source={require("../../assets/images/savibrancotitle.png")}
-                    resizeMode="contain"
-                    resizeMethod="auto"
-                    style={{ height: hp("10%"), alignSelf: "flex-end", width: hp("10%"), alignSelf: 'center'}}
-                />
-                <Appbar.Action icon="more-vert" onPress={()=>{}} color='#fff' />
-            </Appbar>
+            */}
             <View style={{ flex: 1}}>
                 <Map />
+                { filterTabActive ? <>
+                { !filterTabLoading ?
+                    <FAB
+                        style={styles.fab}
+                        icon="keyboard-arrow-right"
+                        onPress={() => read_offers({position: 0, filter: filters})}
+                    />
+                    :
+                    <View style={{ justifyContent: 'center', alignSelf: 'center', position: 'absolute', bottom: 0, marginBottom: hp("2%") }}>
+                        <ActivityIndicator style={{ elevation: 10, position: 'absolute', alignSelf: 'center' }} animating={true} color="#fff" />
+                        <FAB
+                            style={{backgroundColor: '#ff7043', color: '#fff'}}
+                        />   
+                    </View>                
+                }</>
+                :
                 <FAB
                     style={styles.fab}
-                    icon={filterTabActive ? "search" : "keyboard-arrow-right"}
+                    icon="search" 
                     onPress={() => changeTabActive()}
-                />
+                >
+                </FAB>
+                }
             </View>
-            <View style={filterTabActive ? styles.filterTab : styles.filterTabActive}>
+            <View style={!filterTabActive ? styles.filterTab : styles.filterTabActive}>
                 <View style={{ flexDirection: 'column', width: wp("90%"), height: hp("30%"), justifyContent: 'space-between'}}>
                     <ScrollView>
                         <Button onPress={()=>{changeActive("food")}} style={food == false ? styles.filterButton : styles.filterButtonActive} mode="outlined"><Text style={food==true?styles.filterButtonTextActive:styles.filterButtonText}>ALIMENTAÇÃO</Text></Button>
