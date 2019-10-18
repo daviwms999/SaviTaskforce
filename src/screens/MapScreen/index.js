@@ -1,16 +1,17 @@
-import React, { useEffect, Fragment } from 'react';
+import React, { useEffect, Fragment, useState } from 'react';
 import Map from '../../components/Map';
-import { View, Image, TouchableOpacity, StyleSheet, Text, ScrollView } from 'react-native';
-import { Appbar, Surface, Button, FAB, ActivityIndicator } from 'react-native-paper';
+import { View, Image, TouchableOpacity, StyleSheet, Text, ScrollView, Animated } from 'react-native';
+import { Appbar, Surface, Button, FAB, ActivityIndicator, Card, Divider } from 'react-native-paper';
 import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import { useSelector, useDispatch } from 'react-redux';
+import { RFPercentage, RFValue } from "react-native-responsive-fontsize";
 import axios from 'axios';
 
 //import { } from 'react-navigation';
 
 // import { Container } from './styles';
 
-export default function MapScreen({ navigation }) {
+export default function MapScreen ({ navigation }) {
     const food = useSelector(state => state.filterActive.food);
     const documentation = useSelector(state => state.filterActive.documentation);
     const education = useSelector(state => state.filterActive.education);
@@ -28,6 +29,13 @@ export default function MapScreen({ navigation }) {
     const longitude = useSelector(state => state.user.location.longitude);
     const filters = useSelector(state => state.filterActive);
 
+    const isMarkerSelected = useSelector(state => state.isMarkerSelected);
+    const markerName = useSelector(state => state.markerSelected.name);
+    const markerDesc = useSelector(state => state.markerSelected.description);
+        
+    const [filterTabAnimNum] = useState(new Animated.Value(0));
+    const [markerCardAnimNum] = useState(new Animated.Value(0));
+
     const url = 'https://parseapi.back4app.com/functions/get_offer_points';
     const config = {
         headers: {
@@ -35,6 +43,61 @@ export default function MapScreen({ navigation }) {
             'X-Parse-REST-API-Key': 'ZMbHFNcQ1Rvh7bIpoctydiF9yRtZDrnJ81pzhtdF'
         }
     };
+
+    function filterTabShowAnimFunc () {
+        Animated.spring(
+            filterTabAnimNum,
+            {
+                toValue: 1000,
+            },
+        ).start();
+        console.log('abriu');
+    }
+
+    function filterTabHideAnimFunc () {
+        Animated.spring(
+            filterTabAnimNum,
+            {
+                toValue: 0,
+            },
+        ).start();
+        console.log('fecho');
+    }
+
+    function markerCardShowAnimFunc () {
+        Animated.spring(
+            markerCardAnimNum,
+            {
+                toValue: 1000,
+            },
+        ).start();
+        //console.log('abriu');
+    }
+
+    function markerCardHideAnimFunc () {
+        Animated.spring(
+            markerCardAnimNum,
+            {
+                toValue: 0,
+            },
+        ).start();
+        //console.log('fecho');
+    }
+
+    const markerCardTabAnimPerc = markerCardAnimNum.interpolate({
+        inputRange: [0, 1000],
+        outputRange: [hp('0%'), hp('20%')]
+    }); 
+
+    const filterTabAnimPerc = filterTabAnimNum.interpolate({
+        inputRange: [0, 1000],
+        outputRange: [hp('0%'), hp('30%')]
+    }); 
+
+    const MapAnimPerc = filterTabAnimNum.interpolate({
+        inputRange: [0, 1000],
+        outputRange: [hp('89%'), hp('59%')]
+    }); 
 
     function addMarkers(markers) {
         dispatch({ type: 'ADD_MARKERS', markers: markers })
@@ -54,14 +117,14 @@ export default function MapScreen({ navigation }) {
             toggleLoading();
             return await axios.post(url, {}, config).then((res) => {
                 console.log(res.data.result);
-                return (addMarkers(res.data.result), changeTabActive(), toggleLoading());
+                return (addMarkers(res.data.result), changeTabActive(), toggleLoading(), filterTabHideAnimFunc());
             });
         } else {
             toggleLoading();
             return await axios.post(url, data, config).then((res) => {
                 console.log(res.data.result);
                 sleep(2000);
-                return (addMarkers(res.data.result), changeTabActive(), toggleLoading());
+                return (addMarkers(res.data.result), changeTabActive(), toggleLoading(), filterTabHideAnimFunc());
             });
         }
     }
@@ -112,8 +175,8 @@ export default function MapScreen({ navigation }) {
                     />
                 </TouchableOpacity>
             */}
-            <View style={{ flex: 1}}>
-                <Map />
+            <Animated.View style={{ height: MapAnimPerc }}>
+                <Map onShowAnim={() => markerCardShowAnimFunc()} />
                 { filterTabActive ? <>
                 { !filterTabLoading ?
                     <FAB
@@ -133,12 +196,17 @@ export default function MapScreen({ navigation }) {
                 <FAB
                     style={styles.fab}
                     icon="search" 
-                    onPress={() => changeTabActive()}
+                    onPress={() => {changeTabActive(), filterTabShowAnimFunc()}}
                 >
                 </FAB>
                 }
-            </View>
-            <View style={!filterTabActive ? styles.filterTab : styles.filterTabActive}>
+            </Animated.View>
+            <Animated.View style={{
+                height: filterTabAnimPerc, 
+                justifyContent:'flex-start', 
+                alignItems:'center', 
+                backgroundColor: '#242f3e'
+            }}>
                 <View style={{ flexDirection: 'column', width: wp("90%"), height: hp("30%"), justifyContent: 'space-between'}}>
                     <ScrollView>
                         <Button onPress={()=>{changeActive("food")}} style={food == false ? styles.filterButton : styles.filterButtonActive} mode="outlined"><Text style={food==true?styles.filterButtonTextActive:styles.filterButtonText}>ALIMENTAÇÃO</Text></Button>
@@ -152,7 +220,17 @@ export default function MapScreen({ navigation }) {
                         <Button onPress={()=>{changeActive("nursery")}} style={nursery == false ? styles.filterButton : styles.filterButtonActive} mode="outlined"><Text style={nursery==true?styles.filterButtonTextActive:styles.filterButtonText}>CRECHE</Text></Button>
                     </ScrollView>
                 </View>
-            </View>
+            </Animated.View>
+            { isMarkerSelected==true ?
+                <Card style={{ position: 'absolute', height: markerCardTabAnimPerc, width: wp("96%"), alignSelf: 'center', bottom: wp('2%'), elevation: 11 }}>
+                    <Card.Content>
+                        <Text style={{fontSize: RFPercentage(3), fontWeight: '600'}}>{markerName}</Text>
+                        <Text>{markerDesc}</Text>
+                    </Card.Content>
+                </Card>
+                :
+                <Fragment/>
+            }
         </View>
     )
 };
@@ -211,7 +289,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#242f3e'
       },
       filterTab: {
-        height: hp("0%"), 
+        height: 0, 
         justifyContent:'flex-start', 
         alignItems:'center', 
         backgroundColor: '#242f3e'

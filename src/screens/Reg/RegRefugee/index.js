@@ -1,129 +1,483 @@
-import React from 'react';
-import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
-import { View, Image, StyleSheet, Text, ScrollView } from 'react-native';
-import { TextInput, Button } from 'react-native-paper';
-// import { Container } from './styles';
-import {KeyboardAvoidingView, SafeAreaView} from 'react-native';
-import { RFPercentage, RFValue } from "react-native-responsive-fontsize";
+import React, { Component } from 'react';
+import { View, Image, StyleSheet, ScrollView, Animated, Text, Dimensions, Keyboard, TouchableOpacity } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
+import { Button, TextInput, Portal, Dialog, List } from 'react-native-paper';
+import { RFPercentage, RFValue } from "react-native-responsive-fontsize";
+import { TouchableHighlight } from 'react-native-gesture-handler';
+// import { Container } from './styles';
 
-const RegRefugee = ({ navigation }) => 
-    //<SafeAreaView>
-    <KeyboardAwareScrollView
-        style={{ backgroundColor: "#FFF" }}
-        resetScrollToCoords={{ x: 0, y: 0 }}
-        scrollEnabled={false}
-        contentContainerStyle={{ flexGrow: 1, justifyContent: 'space-between', flexDirection: 'column' }}
-        >
-        <Image
-            source={require("../../../assets/images/formback.png")}
-            resizeMode="stretch"
-            resizeMethod="auto"
-            style={{
-                width: "101%",
-                height: hp("65%"),
-                position: "absolute",
-                //justifyContent: 'flex-start',
-                //marginBottom: 10,
-                top: 0,
-                //zIndex: -1,
-            }}
-        />
-            <Image
-                source={require("../../../assets/images/savibranco.png")}
-                resizeMode="contain"
-                style={styles.LogoSavi}
-            />
-            <View style={{ flex: 1, justifyContent: 'flex-start'}}>
-                <Text style={styles.RegFamilyTitle}>Registrar Família</Text>
-                <Text style={styles.RegFamilyText} >Todos os membros da familia devem estar no mesmo lugar, se estão em localizações diferentes devem se registrar em celulares diferentes</Text>
-                <Text style={styles.RegFamilySubtitle}>Registrar contato principal da família:</Text>
-            </View>
-            <View style={{ flex: 1, justifyContent: 'flex-end'}}>
-                <TextInput
-                    style={styles.NameInput}
-                    label='Nome'
-                    mode='outlined'
-                />
-                <TextInput
-                    style={styles.LastnameInput}
-                    label='Sobrenome'
-                    mode='outlined'
-                />
-                <View style={{ flexDirection: 'row', justifyContent:'flex-end', marginBottom: hp('2%') }}>
-                <Button
-                    mode="contained"  
+export default class index extends Component {
+    state = {
+        fadeAnim: new Animated.Value(0),
+        scrollRef: null,
+        isMonthSelectorVisible: false,
+        selectedMonth: '',
+    };
+
+    _showDialog = () => this.setState({ isMonthSelectorVisible: true });
+
+    _hideDialog = () => this.setState({ isMonthSelectorVisible: false });
+
+    _selectRadioButton = (value) => this.setState({ checked: value });
+
+    render() {
+        const {navigate} = this.props.navigation;
+        const SCREEN_WIDTH = Dimensions.get("window").width;
+        this.state.scrollRef = React.createRef();
+        const { fadeAnim, isMonthSelectorVisible, selectedMonth } = this.state;
+        function hideAnimFunc () {
+            Animated.spring(
+                fadeAnim,
+                {
+                    toValue: 100,
+                },
+            ).start();
+            console.log(hideAnimPerc);
+        };
+        function showAnimFunc () {
+            Animated.spring(
+                fadeAnim,
+                {
+                    toValue: 0,
+                },
+            ).start();
+        }
+        const hideAnimPerc = fadeAnim.interpolate({
+            inputRange: [0, 100],
+            outputRange: [hp('-10%'), hp('-30%')]
+        }); 
+        const hideAnimPercView = fadeAnim.interpolate({
+            inputRange: [0, 100],
+            outputRange: [hp('45%'), hp('25%')]
+        }); 
+        const extendFormView = fadeAnim.interpolate({
+            inputRange: [0, 100],
+            outputRange: [hp('50%'), hp('70%')]
+        }); 
+        return (
+            <KeyboardAwareScrollView
+                style={{ backgroundColor: "#FFF" }}
+                resetScrollToCoords={{ x: 0, y: 0 }}
+                scrollEnabled={false}
+                contentContainerStyle={{ flexGrow: 1, justifyContent: 'space-between', flexDirection: 'column' }}
+            >
+                <Animated.Image
+                    source={require("../../../assets/images/formback.png")}
+                    resizeMode="stretch"
+                    resizeMethod="auto"
                     style={{
-                    height: hp('6%'),
-                    width: '45%',
-                    marginRight: wp("5%"),
-                    color: '#fff'
+                        width: "100%",
+                        height: hp("55%"),
+                        position: "absolute",
+                        top:  hideAnimPerc
+                        //transform: [{translateY: fadeAnim._value}]          
                     }}
-                    labelStyle={{
-                        color: '#fff'
-                    }}
-                    contentStyle={{
-                    height: hp('6%'),
-                    }}
-                    onPress={() => navigation.navigate('MapScreen')}
-                >
-                    Confirmar
-                </Button>
-                </View>
-            </View>
-    </KeyboardAwareScrollView>
-    //</SafeAreaView>
-;
+                />
+                <Animated.View style={{ justifyContent: 'flex-start', alignSelf: 'center', height: hideAnimPercView}}>
+                    <Image
+                        resizeMethod="auto"
+                        source={require("../../../assets/images/savibranco.png")}
+                        resizeMode="contain"
+                        style={style.LogoSavi}
+                    />
+                    <Text style={style.RegFamilyTitle}>Registrar Família</Text>
+                    <Text style={style.RegFamilyText} >Todos os membros da familia devem estar no mesmo lugar, se estão em localizações diferentes devem se registrar em celulares diferentes</Text>
+                </Animated.View>
+                <Animated.ScrollView 
+                    style={{height: extendFormView}}
+                    horizontal
+                    pagingEnabled
+                    scrollEnabled={false}
+                    showsHorizontalScrollIndicator={false}
+                    ref={(c) => {this.scroll = c}}
+                    onScroll={Animated.event( [{ nativeEvent: { contentOffset: { x: this.animation, }, }, },], { useNativeDriver: true } )}
+                    >
+                        <View 
+                            style={{ 
+                                width: SCREEN_WIDTH, 
+                                backgroundColor: '#fff', 
+                                height: hp("50%"), 
+                                //justifyContent: 'space-between' 
+                                }} 
+                            index={0}
+                        >
+                            <View style={{
+                                width: SCREEN_WIDTH, 
+                                backgroundColor: '#fff', 
+                                height: hp("10%"),
+                                justifyContent: 'flex-start' 
+                            }}>
+                                <Text style={style.RegFamilySubtitle}>Registrar contato principal da Familia</Text>
+                            </View>  
+                            <View style={{
+                                width: SCREEN_WIDTH, 
+                                backgroundColor: '#fff', 
+                                height: hp("40%"),
+                                justifyContent: 'flex-end' 
+                            }}>
+                                <TextInput
+                                    style={style.NameInput}
+                                    label='Nome'
+                                    mode='outlined'
+                                />
+                                <TextInput
+                                    style={style.LastnameInput}
+                                    label='Sobrenome'
+                                    mode='outlined'
+                                />
+                                <View style={{ flexDirection: 'row', justifyContent: 'space-between'}}>
+                                    <Button
+                                        mode="text"  
+                                        icon="chevron-left"
+                                        style={{
+                                        //height: hp('6%'),
+                                        width: wp("28%"),
+                                        marginLeft: wp("5%"),
+                                        marginBottom: hp("2%"),
+                                        alignSelf:'flex-end',                                    
+                                        }}
+                                        onPress={() => this.scroll.getNode().scrollTo({x: 0})}
+                                    >
+                                        <Text style={{ color: '#707070', fontSize: 12 }}>Voltar</Text>
+                                    </Button>
+                                    <Button
+                                        mode="contained"  
+                                        style={{
+                                        //height: hp('6%'),
+                                        width: wp("28%"),
+                                        marginRight: wp("5%"),
+                                        marginBottom: hp("2%"),
+                                        alignSelf:'flex-end'
+                                        }}
+                                        onPress={() => {this.scroll.getNode().scrollTo({x: SCREEN_WIDTH}), hideAnimFunc()}}
+                                    >
+                                        <Text style={{ color: '#ffffff', fontSize: 12 }}>Continuar</Text>
+                                    </Button>
+                                </View>
+                            </View>
+                        </View>
+                        <Animated.View 
+                            style={{ 
+                                width: SCREEN_WIDTH, 
+                                backgroundColor: '#fff', 
+                                height: extendFormView, 
+                                justifyContent: 'flex-end' 
+                                }} 
+                            index={1}
+                        >
+                            <View style={{
+                                width: SCREEN_WIDTH, 
+                                backgroundColor: '#fff', 
+                                height: hp("10%"),
+                                justifyContent: 'flex-start' 
+                            }}>
+                                <Text style={style.RegFamilySubtitle}>Precisamos de mais informações</Text>
+                            </View>
+                            <View style={{
+                                width: SCREEN_WIDTH, 
+                                backgroundColor: '#fff', 
+                                height: hp("60%"),
+                                justifyContent: 'flex-end' 
+                            }}>
+                                <TextInput
+                                    style={style.NameInput}
+                                    label='Documento de Identidade'
+                                    mode='outlined'
+                                />
+                                <TextInput
+                                    style={style.TextInput}
+                                    label='Tipo de Documento de Identidade'
+                                    mode='outlined'
+                                />
+                                <View style={{
+                                    flexDirection: 'row',
+                                    justifyContent: 'space-between',
+                                    marginLeft: wp("5%"),
+                                    marginRight: wp("5%"),
+                                    marginBottom: hp("2%")
+                                }}>
+                                    <TextInput
+                                        style={style.DayInput}
+                                        label='Dia'
+                                        mode='outlined'
+                                    />
+                                    <TouchableOpacity
+                                        onPress={this._showDialog}
+                                    >
+                                        <TextInput
+                                            style={style.MonthInput}
+                                            label='Mês'
+                                            mode='outlined'
+                                            editable={false}
+                                            disabled={true}
+                                            //onFocus={ Keyboard.dismiss(), this._showDialog}
+                                            value={selectedMonth}
+                                            theme={{ colors: {
+                                                disabled: '#707070',
+                                                placeholder: '#000'
+                                            }}}
+                                        />
+                                    </TouchableOpacity>
+                                    <Portal>
+                                        <Dialog
+                                            visible={isMonthSelectorVisible}
+                                            onDismiss={this._hideDialog}
+                                            style={{height: hp("50%")}}
+                                        >    
+                                            <Dialog.Title>Mês</Dialog.Title>
+                                                <Dialog.ScrollArea>
+                                                    <ScrollView >
+                                                        <List.Item
+                                                            title="Janeiro"
+                                                            onPress={() => this.setState({ selectedMonth: 'Janeiro'})}
+                                                            style={selectedMonth=='Janeiro'?{backgroundColor: '#ccc'}:{backgroundColor: '#FFF'}}
+                                                        />
+                                                        <List.Item
+                                                            title="Fevereiro"
+                                                            onPress={() => this.setState({ selectedMonth: 'Fevereiro'})}
+                                                            style={selectedMonth=='Fevereiro'?{backgroundColor: '#ccc'}:{backgroundColor: '#FFF'}}
+                                                        />
+                                                        <List.Item
+                                                            title="Março"
+                                                            onPress={() => this.setState({ selectedMonth: 'Março'})}
+                                                            style={selectedMonth=='Março'?{backgroundColor: '#ccc'}:{backgroundColor: '#FFF'}}
+                                                        />
+                                                        <List.Item
+                                                            title="Abril"
+                                                            onPress={() => this.setState({ selectedMonth: 'Abril'})}
+                                                            style={selectedMonth=='Abril'?{backgroundColor: '#ccc'}:{backgroundColor: '#FFF'}}
+                                                        />
+                                                        <List.Item
+                                                            title="Maio"
+                                                            onPress={() => this.setState({ selectedMonth: 'Maio'})}
+                                                            style={selectedMonth=='Maio'?{backgroundColor: '#ccc'}:{backgroundColor: '#FFF'}}
+                                                        />
+                                                        <List.Item
+                                                            title="Junho"
+                                                            onPress={() => this.setState({ selectedMonth: 'Junho'})}
+                                                            style={selectedMonth=='Junho'?{backgroundColor: '#ccc'}:{backgroundColor: '#FFF'}}
+                                                        />
+                                                        <List.Item
+                                                            title="Julho"
+                                                            onPress={() => this.setState({ selectedMonth: 'Julho'})}
+                                                            style={selectedMonth=='Julho'?{backgroundColor: '#ccc'}:{backgroundColor: '#FFF'}}
+                                                        />
+                                                        <List.Item
+                                                            title="Agosto"
+                                                            onPress={() => this.setState({ selectedMonth: 'Agosto'})}
+                                                            style={selectedMonth=='Agosto'?{backgroundColor: '#ccc'}:{backgroundColor: '#FFF'}}
+                                                        />
+                                                        <List.Item
+                                                            title="Setembro"
+                                                            onPress={() => this.setState({ selectedMonth: 'Setembro'})}
+                                                            style={selectedMonth=='Setembro'?{backgroundColor: '#ccc'}:{backgroundColor: '#FFF'}}
+                                                        />
+                                                        <List.Item
+                                                            title="Outubro"
+                                                            onPress={() => this.setState({ selectedMonth: 'Outubro'})}
+                                                            style={selectedMonth=='Outubro'?{backgroundColor: '#ccc'}:{backgroundColor: '#FFF'}}
+                                                        />
+                                                        <List.Item
+                                                            title="Novembro"
+                                                            onPress={() => this.setState({ selectedMonth: 'Novembro'})}
+                                                            style={selectedMonth=='Novembro'?{backgroundColor: '#ccc'}:{backgroundColor: '#FFF'}}
+                                                        />
+                                                        <List.Item
+                                                            title="Dezembro"
+                                                            onPress={() => this.setState({ selectedMonth: 'Dezembro'})}
+                                                            style={selectedMonth=='Dezembro'?{backgroundColor: '#ccc'}:{backgroundColor: '#FFF'}}
+                                                        />
+                                                    </ScrollView>
+                                                </Dialog.ScrollArea>
+                                            <Dialog.Actions>
+                                                <Button onPress={this._hideDialog}>Ok</Button>
+                                            </Dialog.Actions>
+                                        </Dialog>
+                                    </Portal>
+                                    <TextInput
+                                        style={style.YearInput}
+                                        label='Ano'
+                                        mode='outlined'
+                                    />
+                                </View>
+                                    <TouchableOpacity
+                                            //onPress={this._showDialog}
+                                    >        
+                                        <TextInput
+                                            style={style.LastnameInput}                                            label='Mês'
+                                            mode='outlined'
+                                            editable={false}
+                                            disabled={true}
+                                            label='Gênero'
+                                            //onFocus={ Keyboard.dismiss(), this._showDialog}
+                                            theme={{ colors: {
+                                                disabled: '#707070',
+                                                placeholder: '#000'
+                                            }}}
+                                        />
+                                    </TouchableOpacity>
+                                <View style={{ flexDirection: 'row', justifyContent: 'space-between'}}>
+                                    <Button
+                                        mode="text"  
+                                        icon="chevron-left"
+                                        style={{
+                                        //height: hp('6%'),
+                                        width: wp("28%"),
+                                        marginLeft: wp("5%"),
+                                        marginBottom: hp("2%"),
+                                        alignSelf:'flex-end',                                    
+                                        }}
+                                        onPress={() => {this.scroll.getNode().scrollTo({x: 0}), showAnimFunc()}}
+                                    >
+                                        <Text style={{ color: '#707070', fontSize: 12 }}>Voltar</Text>
+                                    </Button>
+                                    <Button
+                                        mode="contained"  
+                                        style={{
+                                        //height: hp('6%'),
+                                        width: wp("28%"),
+                                        marginRight: wp("5%"),
+                                        marginBottom: hp("2%"),
+                                        alignSelf:'flex-end'
+                                        }}
+                                        onPress={() => this.scroll.getNode().scrollTo({x: SCREEN_WIDTH*2})}
+                                    >
+                                        <Text style={{ color: '#ffffff', fontSize: 12 }}>Continuar</Text>
+                                    </Button>
+                                </View>
+                            </View>
+                        </Animated.View>
+                        <Animated.View 
+                            style={{ 
+                                width: SCREEN_WIDTH, 
+                                backgroundColor: '#fff', 
+                                height: extendFormView, 
+                                justifyContent: 'flex-end' 
+                                }} 
+                            index={2}
+                        >
+                            <View style={{
+                                width: SCREEN_WIDTH, 
+                                backgroundColor: '#fff', 
+                                height: hp("10%"),
+                                justifyContent: 'flex-start' 
+                            }}>
+                                <Text style={style.RegFamilySubtitle}>Só mais algumas coisinhas</Text>
+                            </View>
+                            <View style={{
+                                width: SCREEN_WIDTH, 
+                                backgroundColor: '#fff', 
+                                height: hp("60%"),
+                                justifyContent: 'flex-end' 
+                            }}>
+                                <TextInput
+                                    style={style.NameInput}
+                                    label='Data de Nascimento'
+                                    mode='outlined'
+                                />
+                                <TextInput
+                                    style={style.LastnameInput}
+                                    label='Genero'
+                                    mode='outlined'
+                                />
+                                <View style={{ flexDirection: 'row', justifyContent: 'space-between'}}>
+                                    <Button
+                                        mode="text"  
+                                        icon="chevron-left"
+                                        style={{
+                                        //height: hp('6%'),
+                                        width: wp("28%"),
+                                        marginLeft: wp("5%"),
+                                        marginBottom: hp("2%"),
+                                        alignSelf:'flex-end',                                    
+                                        }}
+                                        onPress={() => this.scroll.getNode().scrollTo({x: SCREEN_WIDTH})}
+                                    >
+                                        <Text style={{ color: '#707070', fontSize: 12 }}>Voltar</Text>
+                                    </Button>
+                                    <Button
+                                        mode="contained"  
+                                        style={{
+                                        //height: hp('6%'),
+                                        width: wp("28%"),
+                                        marginRight: wp("5%"),
+                                        marginBottom: hp("2%"),
+                                        alignSelf:'flex-end'
+                                        }}
+                                        onPress={() => navigate("RegistrationRefugeeFamily")}
+                                    >
+                                        <Text style={{ color: '#ffffff', fontSize: 12 }}>Continuar</Text>
+                                    </Button>
+                                </View>
+                            </View>
+                        </Animated.View>  
+                </Animated.ScrollView>
+            </KeyboardAwareScrollView>
+        )
+    }
+}
 
-export default RegRefugee;
-
-RegRefugee.navigationOptions = {
-    title: 'RegistrationRefugee',
-  }
-
-const styles = StyleSheet.create({
+const style = StyleSheet.create({
     LogoSavi: {
-        width: wp("80%"),
-        height: hp("20%"),
-        alignSelf: "center",
-        justifyContent: "flex-start",
-        //marginTop: hp("6%")
-      },
-      RegFamilyTitle: { 
-          fontSize: RFPercentage(5),
-          //marginLeft: wp("5%"),
-          marginTop: hp("3%"),
-          fontWeight: "bold",
-          alignSelf: 'center',
-          color: '#FFF'
-      },
-      RegFamilySubtitle: { 
-        fontSize: RFPercentage(2.3),
-        //marginLeft: wp("5%"),
-        marginTop: hp("3%"),
-        fontWeight: "bold",
-        alignSelf: 'center',
-        color: '#FFF',
+        width: wp("70%"),
+        height: hp("10%"),
+        marginTop: hp("5%"),
+        alignSelf: 'center'
     },
-      RegFamilyText: {
-          fontSize: RFPercentage(2.2), 
-          alignSelf: "center",
-          marginLeft: wp("10%"),
-          marginRight: wp("10%"),
-          marginTop: hp("4%"),
-          color: '#FFF',
-          textAlign: 'center',
-          marginBottom: hp('3%')
-      },
-      NameInput: {
+    NameInput: {
         marginLeft: wp("5%"),
         marginRight: wp("5%"),
         marginBottom: hp("2%"),
-        marginTop: hp("13%")
+        marginTop: hp("4%"),
       },
       LastnameInput: { 
         marginLeft: wp("5%"),
         marginRight: wp("5%"),
-        marginBottom: hp("2%")
-      }
+        marginBottom: hp("7%")
+      },
+      TextInput: {
+        marginLeft: wp("5%"),
+        marginRight: wp("5%"),
+        marginBottom: hp("2%"),
+      },
+      RegFamilySubtitle: { 
+        fontSize: RFPercentage(3),
+        marginLeft: wp("7%"),
+        marginRight: wp("7%"),    
+        alignSelf: 'center',
+        color: '#000',
+        textAlign: 'center',
+        marginTop: hp("2%")
+      },
+      DayInput: {
+        width: wp("28%"),
+        marginRight: wp("3%")
+      },
+      MonthInput: {
+        width: wp("28%"),
+        marginRight: wp("3%"),
+      },
+      YearInput: {
+        width: wp("28%"),
+      },
+      RegFamilyTitle: { 
+        fontSize: RFPercentage(4),
+        //marginLeft: wp("5%"),
+        marginTop: hp("2%"),
+        fontWeight: "bold",
+        alignSelf: 'center',
+        color: '#FFF',
+        marginBottom: hp('1%'),
+    },
+    RegFamilyText: {
+        fontSize: RFPercentage(2.2), 
+        alignSelf: "center",
+        marginLeft: wp("10%"),
+        marginRight: wp("10%"),
+        marginTop: hp("5%"),
+        color: '#FFF',
+        textAlign: 'center',
+        marginBottom: hp('3%')
+    },
 });

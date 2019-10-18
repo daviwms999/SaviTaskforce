@@ -50,15 +50,23 @@ export default function components() {
                 maximumAge: 10000,
             }
         );
-        read_offers({position: {latitude: latitude, longitude: longitude}, filter: filters});
-    }, []);
-    
+        read_offers({position: {latitude: latitude, longitude: longitude}, filter: 0});
+    },[]);
+
     function changeActive(latitude, longitude) {
         dispatch({ type: 'UPDATE_LOCATION', latitude: latitude, longitude: longitude })
     }
 
     function addMarkers(markers) {
         dispatch({ type: 'ADD_MARKERS', markers: markers })
+    }
+
+    function selectMarker(name, description) {
+        dispatch({ type: 'SELECT_MARKER', name: name, description: description })
+    }
+
+    function deselectMarker() {
+        dispatch({ type: 'DESELECT_MARKER' })
     }
 
     const dispatch =  useDispatch();
@@ -72,6 +80,7 @@ export default function components() {
                     showsUserLocation
                     loadingEnabled
                     customMapStyle={MapStyle}
+                    onPress={()=>deselectMarker()}
         >
             { markers.map(marker => (
                 <Marker
@@ -81,7 +90,9 @@ export default function components() {
                         longitude: marker.longitude
                     }}
                     title={marker.name}
-                    //description={marker.description.portuguese}
+                    description={marker.description.portuguese}
+                    onPress={()=>{selectMarker(marker.name, marker.description.portuguese), this.onShowAnim}}
+                    //onDeselect={()=>deselectMarker()}
                 />
                 ))}
         </MapView>

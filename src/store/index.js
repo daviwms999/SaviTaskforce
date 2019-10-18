@@ -1,4 +1,5 @@
 import { createStore } from 'redux';
+import { Animated } from 'react-native';
 
 const INITIAL_STATE = {
     drawerActive: "Minha Localização",
@@ -32,6 +33,13 @@ const INITIAL_STATE = {
     filterTabActive: false,
     filterTabLoading: false,
     editProfileActive: false,
+    isAddMemberDialogOpen: false,
+    filterTabAnim: new Animated.Value(0),
+    isMarkerSelected: false,
+    markerSelected:{
+        name: '',
+        description: '',
+    }
 };
 
 function reducer(state = INITIAL_STATE, action) {
@@ -61,9 +69,28 @@ function reducer(state = INITIAL_STATE, action) {
             newState.filterActive[filterA] = !state.filterActive[filterA];
             return newState 
         case 'FILTERTAB_ACTIVE':
-            return { ...state, filterTabActive: !state.filterTabActive}
+            return { ...state, filterTabActive: !state.filterTabActive }
         case 'FILTER_LOADING':
-            return { ...state, filterTabLoading: !state.filterTabLoading}
+            return { ...state, filterTabLoading: !state.filterTabLoading }
+        case 'FILTERTAB_ANIM':
+            return { ...state, filterTabAnim: action.filterTabAnimNum }
+        case 'SELECT_MARKER':
+            console.log('selecionou');
+            return { 
+                ...state, 
+                markerSelected: {
+                    ...state.markerSelected,
+                    name: action.name,
+                    description: action.description
+                },
+                isMarkerSelected: true,
+            }
+        case 'DESELECT_MARKER':
+            console.log('deselecionou');
+            return {
+                ...state,
+                isMarkerSelected: false,
+            }
         default:
             return state;
     }

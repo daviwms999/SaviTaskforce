@@ -71,7 +71,7 @@ const Routes = createAppContainer(
         MapScreen: {
             screen: MapScreen,
             navigationOptions: {
-                title: 'Map',
+                title: 'MapScreen',
             },
         },
         UserProfile: {
