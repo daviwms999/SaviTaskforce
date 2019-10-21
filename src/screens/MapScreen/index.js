@@ -34,7 +34,7 @@ export default function MapScreen ({ navigation }) {
     const markerDesc = useSelector(state => state.markerSelected.description);
         
     const [filterTabAnimNum] = useState(new Animated.Value(0));
-    const [markerCardAnimNum] = useState(new Animated.Value(0));
+    const markerCardAnimNum = useSelector(state => state.markerCardAnimNum);
 
     const url = 'https://parseapi.back4app.com/functions/get_offer_points';
     const config = {
@@ -62,26 +62,6 @@ export default function MapScreen ({ navigation }) {
             },
         ).start();
         console.log('fecho');
-    }
-
-    function markerCardShowAnimFunc () {
-        Animated.spring(
-            markerCardAnimNum,
-            {
-                toValue: 1000,
-            },
-        ).start();
-        //console.log('abriu');
-    }
-
-    function markerCardHideAnimFunc () {
-        Animated.spring(
-            markerCardAnimNum,
-            {
-                toValue: 0,
-            },
-        ).start();
-        //console.log('fecho');
     }
 
     const markerCardTabAnimPerc = markerCardAnimNum.interpolate({
@@ -221,16 +201,12 @@ export default function MapScreen ({ navigation }) {
                     </ScrollView>
                 </View>
             </Animated.View>
-            { isMarkerSelected==true ?
-                <Card style={{ position: 'absolute', height: markerCardTabAnimPerc, width: wp("96%"), alignSelf: 'center', bottom: wp('2%'), elevation: 11 }}>
+                <Card style={{ color: '#fff', position: 'absolute', height: markerCardTabAnimPerc, width: wp("96%"), alignSelf: 'center', bottom: wp('2%'), zIndex: 100 }}>
                     <Card.Content>
-                        <Text style={{fontSize: RFPercentage(3), fontWeight: '600'}}>{markerName}</Text>
-                        <Text>{markerDesc}</Text>
+                        {/* <Text style={{fontSize: RFPercentage(3), fontWeight: '600'}}>{markerName}</Text>
+                        <Text>{markerDesc}</Text> */}
                     </Card.Content>
                 </Card>
-                :
-                <Fragment/>
-            }
         </View>
     )
 };

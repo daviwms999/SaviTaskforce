@@ -39,8 +39,29 @@ const INITIAL_STATE = {
     markerSelected:{
         name: '',
         description: '',
-    }
+    },
+    markerCardAnimNum: new Animated.Value(0),
 };
+
+function markerCardShowAnimFunc (markerCardAnimNum) {
+    Animated.spring(
+        markerCardAnimNum,
+        {
+            toValue: 1000,
+        },
+    ).start();
+    //console.log('abriu');
+}
+
+function markerCardHideAnimFunc (markerCardAnimNum) {
+    Animated.spring(
+        markerCardAnimNum,
+        {
+            toValue: 1,
+        },
+    ).start();
+    //console.log('fecho');
+}
 
 function reducer(state = INITIAL_STATE, action) {
     switch (action.type) {
@@ -76,6 +97,7 @@ function reducer(state = INITIAL_STATE, action) {
             return { ...state, filterTabAnim: action.filterTabAnimNum }
         case 'SELECT_MARKER':
             console.log('selecionou');
+            markerCardShowAnimFunc(state.markerCardAnimNum);
             return { 
                 ...state, 
                 markerSelected: {
@@ -86,6 +108,7 @@ function reducer(state = INITIAL_STATE, action) {
                 isMarkerSelected: true,
             }
         case 'DESELECT_MARKER':
+            markerCardHideAnimFunc(state.markerCardAnimNum);
             console.log('deselecionou');
             return {
                 ...state,

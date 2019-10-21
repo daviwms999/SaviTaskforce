@@ -1,10 +1,10 @@
 {
     "logs": [
         {
-            "outputFile": "/Users/gelmi/Documents/Savi/SaviTaskforce/android/app/build/intermediates/incremental/mergeDebugResources/merged.dir/values-ml/values-ml.xml",
+            "outputFile": "/Users/gelmi/Documents/SaviTaskforce/android/app/build/intermediates/incremental/mergeDebugResources/merged.dir/values-ml/values-ml.xml",
             "map": [
                 {
-                    "source": "/Users/gelmi/.gradle/caches/transforms-2/files-2.1/cb10bc479ff695c75513e59369947f2d/res/values-ml/values.xml",
+                    "source": "/Users/gelmi/.gradle/caches/transforms-2/files-2.1/ef0fda5df3efa5dc70e45f5011e3ad6e/res/values-ml/values.xml",
                     "from": {
                         "startLines": "4",
                         "startColumns": "0",
@@ -38,7 +38,7 @@
                     }
                 },
                 {
-                    "source": "/Users/gelmi/.gradle/caches/transforms-2/files-2.1/ca7ecf7a74aed40c0eee52e4c172050e/res/values-ml/values.xml",
+                    "source": "/Users/gelmi/.gradle/caches/transforms-2/files-2.1/0515eafa08b08d1a46294dfcba3c1f47/res/values-ml/values.xml",
                     "from": {
                         "startLines": "4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20",
                         "startColumns": "0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0",

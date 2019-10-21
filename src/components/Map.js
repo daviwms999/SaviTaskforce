@@ -73,6 +73,7 @@ export default function components() {
     const region = useSelector(state => state.user.location);
     const markers = useSelector(state => state.markers);
     const list = [];
+    //const onShowAnim = this.props.onShowAnim;
     return (
         <MapView 
                     style={{ flex: 1 }} 
@@ -91,7 +92,7 @@ export default function components() {
                     }}
                     title={marker.name}
                     description={marker.description.portuguese}
-                    onPress={()=>{selectMarker(marker.name, marker.description.portuguese), this.onShowAnim}}
+                    onPress={()=>{selectMarker(marker.name, marker.description.portuguese)/*, onShowAnim*/}}
                     //onDeselect={()=>deselectMarker()}
                 />
                 ))}

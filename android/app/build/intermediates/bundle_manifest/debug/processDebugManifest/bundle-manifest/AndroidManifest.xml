@@ -30,7 +30,7 @@
         android:usesCleartextTraffic="true" >
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyB-YfIZsIwoMwr-hBsST5n-jjVKgFIQ-bg" />
+            android:value="AIzaSyC9ACfaDmJvSzF1XAV9hqrdEVrkcWHNOTM" />
 
         <activity
             android:name="com.savitaskforce.MainActivity"

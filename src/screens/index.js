@@ -12,6 +12,8 @@ import { nullLiteral } from '@babel/types';
 import RegRefugeeFamily from './Reg/RegRefugeeFamily';
 import CustomDrawer from '../components/CustomDrawer';
 import UserProfile from './Profile/UserProfile';
+import SearchMarker from './MarkerSearch';
+import MarkerPage from './Marker/MarkerPage';
 
 /*
 const Routes = createAppContainer(
@@ -79,6 +81,18 @@ const Routes = createAppContainer(
             navigationOptions: {
                 title: 'UserProfile',
             },
+        },
+        SearchMarker: {
+            screen: SearchMarker,
+            navigationOptions: {
+                title: 'SearchMaker'
+            },
+        },
+        MarkerPage: {
+            screen: MarkerPage,
+            navigationOptions: {
+                title: 'MarkerPage'
+            }
         },
     },{
         initialRouteName: 'MapScreen',

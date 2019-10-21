@@ -1,8 +1,25 @@
 {
     "logs": [
         {
-            "outputFile": "/Users/gelmi/Documents/Savi/SaviTaskforce/android/app/build/intermediates/incremental/mergeDebugResources/merged.dir/values-ur/values-ur.xml",
+            "outputFile": "/Users/gelmi/Documents/SaviTaskforce/android/app/build/intermediates/incremental/mergeDebugResources/merged.dir/values-ur/values-ur.xml",
             "map": [
+                {
+                    "source": "/Users/gelmi/.gradle/caches/transforms-2/files-2.1/ef0fda5df3efa5dc70e45f5011e3ad6e/res/values-ur/values.xml",
+                    "from": {
+                        "startLines": "4",
+                        "startColumns": "0",
+                        "startOffsets": "247",
+                        "endColumns": "210",
+                        "endOffsets": "457"
+                    },
+                    "to": {
+                        "startLines": "37",
+                        "startColumns": "4",
+                        "startOffsets": "3982",
+                        "endColumns": "210",
+                        "endOffsets": "4188"
+                    }
+                },
                 {
                     "source": "/Users/gelmi/.gradle/caches/transforms-2/files-2.1/0aa4fe6b6777473a21814d6481b415e6/res/values-ur/values-ur.xml",
                     "from": {
@@ -38,24 +55,7 @@
                     }
                 },
                 {
-                    "source": "/Users/gelmi/.gradle/caches/transforms-2/files-2.1/cb10bc479ff695c75513e59369947f2d/res/values-ur/values.xml",
-                    "from": {
-                        "startLines": "4",
-                        "startColumns": "0",
-                        "startOffsets": "247",
-                        "endColumns": "210",
-                        "endOffsets": "457"
-                    },
-                    "to": {
-                        "startLines": "37",
-                        "startColumns": "4",
-                        "startOffsets": "3982",
-                        "endColumns": "210",
-                        "endOffsets": "4188"
-                    }
-                },
-                {
-                    "source": "/Users/gelmi/.gradle/caches/transforms-2/files-2.1/ca7ecf7a74aed40c0eee52e4c172050e/res/values-ur/values.xml",
+                    "source": "/Users/gelmi/.gradle/caches/transforms-2/files-2.1/0515eafa08b08d1a46294dfcba3c1f47/res/values-ur/values.xml",
                     "from": {
                         "startLines": "4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20",
                         "startColumns": "0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0",

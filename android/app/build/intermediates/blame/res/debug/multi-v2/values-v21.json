@@ -1,7 +1,7 @@
 {
     "logs": [
         {
-            "outputFile": "/Users/gelmi/Documents/Savi/SaviTaskforce/android/app/build/intermediates/incremental/mergeDebugResources/merged.dir/values-v21/values-v21.xml",
+            "outputFile": "/Users/gelmi/Documents/SaviTaskforce/android/app/build/intermediates/incremental/mergeDebugResources/merged.dir/values-v21/values-v21.xml",
             "map": [
                 {
                     "source": "/Users/gelmi/.gradle/caches/transforms-2/files-2.1/0aa4fe6b6777473a21814d6481b415e6/res/values-v21/values-v21.xml",

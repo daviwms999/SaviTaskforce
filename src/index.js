@@ -7,13 +7,15 @@ import store from './store';
 
 const theme = {
     ...DefaultTheme,
+    dark: true,
+    mode: 'exact',
     roundness: 2,
     colors: {
       ...DefaultTheme.colors,
       primary: '#ff7043',
       accent: '#000',
       background: '#fff',
-      text: '#000'
+      text: '#000',
     }
 };
 

@@ -59,6 +59,7 @@ export default function CustomDrawer({ navigation }) {
                 >
                     <List.Section>
                         <List.Item onPress={()=>{changeActive('Minha Localização')}} title='Minha Localização' style={drawerActive=='Minha Localização'?styles.myLocalizationListActive:styles.myLocalizationList} titleStyle={styles.myLocalizationListTitle}/>
+                        <List.Item onPress={() => {changeActive('Procurar Ajuda'), navigation.navigate('SearchMarker')}} title='Procurar Ajuda' style={drawerActive=='Procurar Ajuda'?styles.searchListActive:styles.searchList} titleStyle={styles.searchTitle}/>                        
                         <List.Item onPress={()=>{changeActive('Convidar Amigos')}} title='Convidar Amigos' style={drawerActive=='Convidar Amigos'?styles.inviteFriendsListActive:styles.inviteFriendsList} titleStyle={styles.inviteFriendsTitle}/>
                         <List.Item /*onPress={()=>{changeActive('Noticias')}}*/ title='Noticias' style={drawerActive=='Noticias'?styles.newsListActive:styles.newsList} titleStyle={styles.newsTitle}/>
                     </List.Section>
@@ -117,6 +118,11 @@ const styles = StyleSheet.create({
         fontSize: RFPercentage(2.1), 
         fontWeight: 'bold'
     },
+    searchTitle: { 
+        color: '#fff', 
+        fontSize: RFPercentage(2.1), 
+        fontWeight: 'bold'
+    },
     helpTitle: {
         color: '#fff', 
         fontSize: RFPercentage(1.5), 
@@ -142,6 +148,9 @@ const styles = StyleSheet.create({
         backgroundColor:'#242f3e'
     },
     newsList: { 
+        backgroundColor:'#242f3e'
+    }, 
+    searchList: { 
         backgroundColor:'#242f3e'
     },  
     helpList: {
@@ -177,6 +186,9 @@ const styles = StyleSheet.create({
         backgroundColor: '#ddd'
     },
     newsListActive: { 
+        backgroundColor: '#ddd'
+    },
+    searchListActive: { 
         backgroundColor: '#ddd'
     },   
 });
